@@ -18,7 +18,7 @@ public class GestureEngine
 		gestureTemplates = new ArrayList<Gesture>();
 	}
 	
-	public Gesture recogniseGesture(Gesture candidate)
+	public float[] recogniseGesture(Gesture candidate)
 	{
 		if(gestureTemplates.size() == 0) 
 		{
@@ -57,7 +57,8 @@ public class GestureEngine
 		PApplet.println("Best guess: " + gestureTemplates.get(indexWithHighestScore).gestureName + " (" +(highestScoreSoFar*100) + "%)");
 		//PApplet.println("Template scores are :");
 		//PApplet.println(templateScores);
-		return gestureTemplates.get(indexWithHighestScore);
+		float[] result = {indexWithHighestScore, highestScoreSoFar};
+		return result;
 	}
 	
 	public void addGesture(Gesture gesture, String gestureName)

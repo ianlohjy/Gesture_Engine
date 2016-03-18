@@ -143,10 +143,11 @@ public class GestureRecognition extends PApplet
 			if(drawnPoints.size() > 1)
 			{
 				lastGesture = new Gesture(gestureEngine, drawnPoints);
-				Gesture recognisedGesture = gestureEngine.recogniseGesture(lastGesture);
-				if(recognisedGesture != null)
+				float[] result = gestureEngine.recogniseGesture(lastGesture);
+				if(result != null)
 				{
-					bestGuess = recognisedGesture.gestureName;
+					Gesture recognisedGesture = gestureEngine.gestureTemplates.get((int)result[0]);
+					bestGuess = recognisedGesture.gestureName + " (" + (int)(result[1]*100) + "%)";
 					inferredAngle = lastGesture.indicativeAngle - recognisedGesture.indicativeAngle;
 					println("Inferred Angle is " + degrees(inferredAngle));
 				}
