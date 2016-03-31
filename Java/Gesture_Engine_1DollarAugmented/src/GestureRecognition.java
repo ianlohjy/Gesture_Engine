@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 import processing.core.*;
 
+
 public class GestureRecognition extends PApplet
 {
 	ArrayList<PVector> drawnPoints;
