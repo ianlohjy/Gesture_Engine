@@ -17,13 +17,13 @@ public class GestureEngine
 		gestureTemplates = new ArrayList<Gesture>();
 	}
 	
-	public float[] recogniseGesture(ArrayList<PVector> points)
+	public GestureResponse recogniseGesture(ArrayList<PVector> points)
 	{
 		Gesture candidate = new Gesture(this,points);
 		return recogniseGesture(candidate);
 	}
 	
-	public float[] recogniseGesture(Gesture candidate)
+	public GestureResponse recogniseGesture(Gesture candidate)
 	{
 		if(gestureTemplates.size() == 0) 
 		{
@@ -60,10 +60,7 @@ public class GestureEngine
 		}
 		
 		PApplet.println("Best guess: " + gestureTemplates.get(indexWithHighestScore).gestureName + " (" +(highestScoreSoFar*100) + "%)");
-		//PApplet.println("Template scores are :");
-		//PApplet.println(templateScores);
-		float[] result = {indexWithHighestScore, highestScoreSoFar};
-		return result;
+		return new GestureResponse(gestureTemplates.get(indexWithHighestScore).gestureName, highestScoreSoFar*100f, candidate.indicativeAngle - gestureTemplates.get(indexWithHighestScore).indicativeAngle);
 	}
 	
 	public void trainGesture(ArrayList<PVector> points, String gestureName)
@@ -101,18 +98,18 @@ public class GestureEngine
 		}
 	}
 	
-	
 	class GestureResponse
 	{
-		float inferredAngle;
-		float bestGuess;
+		String bestGuess; // This is the gesture with the highest score
+		float score; // Recognition score of the best guess
+		float inferredAngle; // Inferred angle of the recognized gesture shape, relative to the  
 		
+		GestureResponse(String bestGuess, float score, float inferredAngle)
+		{
+			this.bestGuess = bestGuess;
+			this.score = score;
+			this.inferredAngle = inferredAngle;
+		}
 	}
 	
-	/*
-	class Gesture
-	{
-		
-	}
-	*/
 }

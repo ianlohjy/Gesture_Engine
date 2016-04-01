@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import processing.core.*;
 
 
-public class GestureRecognition extends PApplet
+public class GestureExample extends PApplet
 {
 	ArrayList<PVector> drawnPoints;
 	GestureEngine gestureEngine;
@@ -12,7 +12,7 @@ public class GestureRecognition extends PApplet
 	
 	public static void main(String args[])
 	{
-		PApplet.main(new String[] { "GestureRecognition" });
+		PApplet.main(new String[] { "GestureExample" });
 	}
 	
 	// PROCESSING APPLET //
@@ -84,12 +84,11 @@ public class GestureRecognition extends PApplet
 		{
 			if(drawnPoints.size() > 1)
 			{
-				float[] result = gestureEngine.recogniseGesture(drawnPoints);
+				GestureEngine.GestureResponse result = gestureEngine.recogniseGesture(drawnPoints);
 				if(result != null)
 				{
-					Gesture recognisedGesture = gestureEngine.gestureTemplates.get((int)result[0]);
-					bestGuess = recognisedGesture.gestureName + " (" + (int)(result[1]*100) + "%)";
-					//inferredAngle = lastGesture.indicativeAngle - recognisedGesture.indicativeAngle;
+					bestGuess = result.bestGuess + " (" + (int)(result.score) + "%)";
+					inferredAngle = result.inferredAngle;
 					//println("Inferred Angle is " + degrees(inferredAngle));
 				}
 			}
