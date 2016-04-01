@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import processing.core.*;
 
-
 public class GestureEngine 
 {
 	ArrayList<Gesture> gestureTemplates;
@@ -16,6 +15,12 @@ public class GestureEngine
 		referenceSquareLength = 100;
 		gestureResolution = 64;
 		gestureTemplates = new ArrayList<Gesture>();
+	}
+	
+	public float[] recogniseGesture(ArrayList<PVector> points)
+	{
+		Gesture candidate = new Gesture(this,points);
+		return recogniseGesture(candidate);
 	}
 	
 	public float[] recogniseGesture(Gesture candidate)
@@ -61,7 +66,13 @@ public class GestureEngine
 		return result;
 	}
 	
-	public void addGesture(Gesture gesture, String gestureName)
+	public void trainGesture(ArrayList<PVector> points, String gestureName)
+	{
+		Gesture templateGesture = new Gesture(this,points);
+		trainGesture(templateGesture, gestureName);
+	}
+	
+	public void trainGesture(Gesture gesture, String gestureName)
 	{
 		gesture.gestureName = gestureName;
 		gestureTemplates.add(gesture);
@@ -69,7 +80,7 @@ public class GestureEngine
 		gesture.saveAsJson("./gestures/");
 	}
 	
-	public void loadGestures(String folderPath)
+	public void loadGestureTemplatesFrom(String folderPath)
 	{
 		File dir = new File(folderPath);
 		File [] files = dir.listFiles();
@@ -89,4 +100,19 @@ public class GestureEngine
 			}
 		}
 	}
+	
+	
+	class GestureResponse
+	{
+		float inferredAngle;
+		float bestGuess;
+		
+	}
+	
+	/*
+	class Gesture
+	{
+		
+	}
+	*/
 }

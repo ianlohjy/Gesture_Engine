@@ -1,12 +1,10 @@
 import java.util.ArrayList;
-
 import processing.core.*;
 
 
 public class GestureRecognition extends PApplet
 {
 	ArrayList<PVector> drawnPoints;
-	Gesture lastGesture;
 	GestureEngine gestureEngine;
 	String textBoxEntry = "";
 	String bestGuess = "No gesture templates stored";
@@ -17,6 +15,7 @@ public class GestureRecognition extends PApplet
 		PApplet.main(new String[] { "GestureRecognition" });
 	}
 	
+	// PROCESSING APPLET //
 	public void settings()
 	{
 		size(300,300);
@@ -26,34 +25,128 @@ public class GestureRecognition extends PApplet
 	{
 		background(255);
 		gestureEngine = new GestureEngine();
-		gestureEngine.loadGestures("./gestures/");
+		gestureEngine.loadGestureTemplatesFrom("./gestures/");
 	}
 	
 	public void draw()
 	{
 		background(255);
-		
-		noStroke();
-		fill(0,50);
-		ellipse(mouseX, mouseY, 10, 10);
-		
 		drawPoints(drawnPoints);
-		/*
-		if(lastGesture != null)
-		{	
-			pushMatrix();
-			translate(lastGesture.centroid.x, lastGesture.centroid.y);
-			drawPoints(lastGesture.points);
-			popMatrix();
-			fill(255,0,0);
-			noStroke();
-			ellipse(lastGesture.centroid.x, lastGesture.centroid.y, 5, 5);
-			stroke(255,0,0);
-			strokeWeight(2);
-			line(lastGesture.centroid.x, lastGesture.centroid.y, lastGesture.points.get(0).x + lastGesture.centroid.x, lastGesture.points.get(0).y + lastGesture.centroid.y);
-		}
-		*/
+		drawUI();
+	}
+	
+	// EVENT HANDLING //
+	public void keyTyped() 
+	{
+		println("typed " + key + " " + keyCode);
 		
+		if((int)key != 8)
+		{
+			textBoxEntry += key;
+		}
+		
+		if((int)key == 8 && textBoxEntry.length()>0)
+		{
+			textBoxEntry = textBoxEntry.substring(0, textBoxEntry.length()-1);
+		}
+		
+		println(textBoxEntry);
+	}
+	
+	public void mousePressed()
+	{
+		drawnPoints = new ArrayList<PVector>();
+		if(mouseY < height-20)
+		{	
+			drawnPoints = new ArrayList<PVector>();
+			drawnPoints.add(new PVector(mouseX,mouseY));
+		}
+		
+		if(mouseY > height-20 && mouseX > width/2)
+		{	// If mouse clicks the "ADD GESTURE" button
+			if(drawnPoints != null)
+			{
+				if(textBoxEntry.isEmpty())
+				{
+					gestureEngine.trainGesture(drawnPoints, "NO_NAME");
+				}
+				else
+				{
+					gestureEngine.trainGesture(drawnPoints, textBoxEntry);
+				}
+			}	
+		}
+	}
+	
+	public void mouseReleased()
+	{
+		if(mouseY < height-20)
+		{
+			if(drawnPoints.size() > 1)
+			{
+				float[] result = gestureEngine.recogniseGesture(drawnPoints);
+				if(result != null)
+				{
+					Gesture recognisedGesture = gestureEngine.gestureTemplates.get((int)result[0]);
+					bestGuess = recognisedGesture.gestureName + " (" + (int)(result[1]*100) + "%)";
+					//inferredAngle = lastGesture.indicativeAngle - recognisedGesture.indicativeAngle;
+					//println("Inferred Angle is " + degrees(inferredAngle));
+				}
+			}
+		}
+	}
+	
+	public void mouseDragged()
+	{
+		if(mouseY < height-20)
+		{
+			if(drawnPoints.size() == 0)
+			{
+				drawnPoints.add(new PVector(mouseX, mouseY));
+			}
+			else 
+			{
+				PVector lastPoint = drawnPoints.get(drawnPoints.size()-1);
+				float dstFrmLstPt = dist(lastPoint.x, lastPoint.y, mouseX, mouseY);
+				
+				if(dstFrmLstPt > 2)
+				{
+					drawnPoints.add(new PVector(mouseX, mouseY));
+				}
+			}
+		}
+	}
+	
+	// RENDERING & DISPLAY //
+	public void drawPoints(ArrayList<PVector> points)
+	{
+		noFill();
+		
+		if(points != null) 
+		{
+			if(points.size() == 1)
+			{
+				strokeWeight(1);
+				point(points.get(0).x, points.get(0).y);
+			}
+			else if(points.size() > 1)
+			{
+				for(int p=0; p<points.size()-1; p++)
+				{
+					stroke(0);
+					strokeWeight(1);
+					point(points.get(p).x, points.get(p).y);
+					
+					stroke(0,200);
+					strokeWeight(5);
+					line(points.get(p).x, points.get(p).y, points.get(p+1).x, points.get(p+1).y);
+				}	
+			}
+		}
+	}
+
+	public void drawUI()
+	{
 		stroke(0);
 		strokeWeight(1);
 		fill(255);
@@ -95,113 +188,4 @@ public class GestureRecognition extends PApplet
 		popMatrix();
 	}
 	
-	public void keyTyped() 
-	{
-		println("typed " + key + " " + keyCode);
-		
-		if((int)key != 8)
-		{
-			textBoxEntry += key;
-		}
-		
-		if((int)key == 8 && textBoxEntry.length()>0)
-		{
-			textBoxEntry = textBoxEntry.substring(0, textBoxEntry.length()-1);
-		}
-		
-		println(textBoxEntry);
-	}
-	
-	public void mousePressed()
-	{
-		drawnPoints = new ArrayList<PVector>();
-		if(mouseY < height-20)
-		{	
-			lastGesture = null;
-			drawnPoints = new ArrayList<PVector>();
-		}
-		
-		if(mouseY > height-20 && mouseX > width/2)
-		{	// If mouse clicks the "ADD GESTURE" button
-			if(lastGesture != null)
-			{
-				if(textBoxEntry.isEmpty())
-				{
-					gestureEngine.addGesture(lastGesture, "NO_NAME");
-				}
-				else
-				{
-					gestureEngine.addGesture(lastGesture, textBoxEntry);
-				}
-			}	
-		}
-	}
-	
-	public void mouseReleased()
-	{
-		if(mouseY < height-20)
-		{
-			if(drawnPoints.size() > 1)
-			{
-				lastGesture = new Gesture(gestureEngine, drawnPoints);
-				float[] result = gestureEngine.recogniseGesture(lastGesture);
-				if(result != null)
-				{
-					Gesture recognisedGesture = gestureEngine.gestureTemplates.get((int)result[0]);
-					bestGuess = recognisedGesture.gestureName + " (" + (int)(result[1]*100) + "%)";
-					inferredAngle = lastGesture.indicativeAngle - recognisedGesture.indicativeAngle;
-					println("Inferred Angle is " + degrees(inferredAngle));
-				}
-			}
-		}
-	}
-	
-	public void mouseDragged()
-	{
-		if(mouseY < height-20)
-		{
-			if(drawnPoints.size() == 0)
-			{
-				drawnPoints.add(new PVector(mouseX, mouseY));
-			}
-			else 
-			{
-				PVector lastPoint = drawnPoints.get(drawnPoints.size()-1);
-				float dstFrmLstPt = dist(lastPoint.x, lastPoint.y, mouseX, mouseY);
-				
-				if(dstFrmLstPt > 2)
-				{
-					drawnPoints.add(new PVector(mouseX, mouseY));
-				}
-			}
-		}
-	}
-	
-	public void drawPoints(ArrayList<PVector> points)
-	{
-		noFill();
-		
-		if(points != null) 
-		{
-			if(points.size() == 1)
-			{
-				strokeWeight(1);
-				point(points.get(0).x, points.get(0).y);
-			}
-			else if(points.size() > 1)
-			{
-				for(int p=0; p<points.size()-1; p++)
-				{
-					stroke(0);
-					strokeWeight(1);
-					point(points.get(p).x, points.get(p).y);
-					
-					stroke(0,200);
-					strokeWeight(5);
-					line(points.get(p).x, points.get(p).y, points.get(p+1).x, points.get(p+1).y);
-				}	
-			}
-		}
-	}
-
 }
