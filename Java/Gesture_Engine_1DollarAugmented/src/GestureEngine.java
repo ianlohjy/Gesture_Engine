@@ -2,6 +2,11 @@
 // Uses the PVector class from Processing for point and line storage
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeMap;
+
 import processing.core.*;
 
 public class GestureEngine 
@@ -31,36 +36,34 @@ public class GestureEngine
 			return null;
 		}
 		
-		float avgDistance[]    = new float[gestureTemplates.size()];
-		float templateScores[] = new float[gestureTemplates.size()];
+		TreeMap<Float, Gesture> templateScoresMap = new TreeMap<Float, Gesture>(Collections.reverseOrder());
 		
 		// Find the average distance of between corresponding points for candidate gesture and gesture template
 		for(int gt=0; gt<gestureTemplates.size(); gt++)
 		{
+			float avgDistance = 0;
+			Gesture template = gestureTemplates.get(gt);
 			for(int p=0; p<gestureTemplates.get(gt).points.size(); p++)
 			{
-				Gesture template = gestureTemplates.get(gt);
-				avgDistance[gt] += PApplet.dist(template.points.get(p).x, template.points.get(p).y, candidate.points.get(p).x, candidate.points.get(p).y);
+				avgDistance += PApplet.dist(template.points.get(p).x, template.points.get(p).y, candidate.points.get(p).x, candidate.points.get(p).y);
 			}
-			avgDistance[gt]    = avgDistance[gt]/candidate.gestureResolution;
-			templateScores[gt] = 1-( avgDistance[gt]/(0.5f*PApplet.dist(0f,0f,referenceSquareLength,referenceSquareLength)) );
+			avgDistance = avgDistance/candidate.gestureResolution;
+			templateScoresMap.put( (1-(avgDistance/(0.5f*PApplet.dist(0f,0f,referenceSquareLength,referenceSquareLength))))*100f, template);
 		}
+
+		int curIteratorIndex            = 0;
+		float[] scoresRanked            = new float[templateScoresMap.size()];
+		Gesture[] gesturesRanked        = new Gesture[templateScoresMap.size()];
+		Iterator<Float> treeMapIterator = templateScoresMap.keySet().iterator(); 
 		
-		// Find highest score
-		int indexWithHighestScore = 0;
-		float highestScoreSoFar   = 0;
-		
-		for(int s=0; s<templateScores.length; s++)
-		{
-			if(templateScores[s] > highestScoreSoFar)
-			{
-				indexWithHighestScore = s;
-				highestScoreSoFar = templateScores[s];
-			}
-		}
-		
-		PApplet.println("Best guess: " + gestureTemplates.get(indexWithHighestScore).gestureName + " (" +(highestScoreSoFar*100) + "%)");
-		return new GestureResponse(gestureTemplates.get(indexWithHighestScore).gestureName, highestScoreSoFar*100f, candidate.indicativeAngle - gestureTemplates.get(indexWithHighestScore).indicativeAngle);
+		while(treeMapIterator.hasNext())
+		{ 
+			scoresRanked[curIteratorIndex]   = treeMapIterator.next();
+			gesturesRanked[curIteratorIndex] = templateScoresMap.get(scoresRanked[curIteratorIndex]);
+			curIteratorIndex++;
+		} 
+		PApplet.println(scoresRanked);
+		return new GestureResponse(gesturesRanked, scoresRanked);
 	}
 	
 	public void trainGesture(ArrayList<PVector> points, String gestureName)
@@ -111,15 +114,34 @@ public class GestureEngine
 	
 	class GestureResponse
 	{
-		String bestGuess; // This is the gesture with the highest score
-		float score; // Recognition score of the best guess
-		float inferredAngle; // Inferred angle of the recognized gesture shape, relative to the  
+		String bestGuess; // This is the gesture name with the highest score
+		Gesture bestGesture; // This is the gesture with the highest score
+		float bestScore; // Recognition score of the best guess
 		
-		GestureResponse(String bestGuess, float score, float inferredAngle)
+		float[] scoresRanked;
+		Gesture[] gesturesRanked;
+		
+		GestureResponse(Gesture[] gesturesRanked, float[] scoresRanked)
 		{
-			this.bestGuess = bestGuess;
-			this.score = score;
-			this.inferredAngle = inferredAngle;
+			this.scoresRanked = scoresRanked;
+			this.gesturesRanked = gesturesRanked;
+			this.bestGesture = gesturesRanked[0];
+			this.bestGuess = gesturesRanked[0].gestureName;
+			this.bestScore = scoresRanked[0];
+		}
+		
+		void printTopGuesses(int amount)
+		{
+			if(amount > gesturesRanked.length)
+			{
+				amount = gesturesRanked.length;
+			}
+			
+			for(int g=0; g<amount; g++)
+			{
+				System.out.println("Guess " + g + " - " + gesturesRanked[g].gestureName + " (" + scoresRanked[g] + "%)");
+			}
+			
 		}
 	}
 	

@@ -87,8 +87,8 @@ public class GestureExample extends PApplet
 				GestureEngine.GestureResponse result = gestureEngine.recogniseGesture(drawnPoints);
 				if(result != null)
 				{
-					bestGuess = result.bestGuess + " (" + (int)(result.score) + "%)";
-					inferredAngle = result.inferredAngle;
+					bestGuess = result.bestGuess + " (" + (int)(result.bestScore) + "%)";
+					inferredAngle = 0;
 					//println("Inferred Angle is " + degrees(inferredAngle));
 				}
 			}
