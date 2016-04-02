@@ -3,7 +3,6 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
 
@@ -36,6 +35,7 @@ public class GestureEngine
 			return null;
 		}
 		
+		// Setup a TreeMap for easier sorting
 		TreeMap<Float, Gesture> templateScoresMap = new TreeMap<Float, Gesture>(Collections.reverseOrder());
 		
 		// Find the average distance of between corresponding points for candidate gesture and gesture template
@@ -48,9 +48,11 @@ public class GestureEngine
 				avgDistance += PApplet.dist(template.points.get(p).x, template.points.get(p).y, candidate.points.get(p).x, candidate.points.get(p).y);
 			}
 			avgDistance = avgDistance/candidate.gestureResolution;
+			// Calculate the correlation score between candidate and template
 			templateScoresMap.put( (1-(avgDistance/(0.5f*PApplet.dist(0f,0f,referenceSquareLength,referenceSquareLength))))*100f, template);
 		}
-
+		
+		// Move sorted TreeMap data into 2 different arrays for score and gesture. This is for easier handling within the GestureResponse class
 		int curIteratorIndex            = 0;
 		float[] scoresRanked            = new float[templateScoresMap.size()];
 		Gesture[] gesturesRanked        = new Gesture[templateScoresMap.size()];
@@ -62,7 +64,7 @@ public class GestureEngine
 			gesturesRanked[curIteratorIndex] = templateScoresMap.get(scoresRanked[curIteratorIndex]);
 			curIteratorIndex++;
 		} 
-		PApplet.println(scoresRanked);
+		
 		return new GestureResponse(gesturesRanked, scoresRanked);
 	}
 	

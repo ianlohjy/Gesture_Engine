@@ -76,7 +76,7 @@ public class Gesture
 			if(r==0)
 			{
 				resampledPoints.add(originalPoints.get(0));
-				PApplet.println("Added point " + r);
+				// PApplet.println("Added point " + r);
 			} 
 			else
 			{
@@ -89,7 +89,7 @@ public class Gesture
 						lastDivision.setMag((float)neededDistance); // Set that last segment vector to the needed distance
 						
 						resampledPoints.add(new PVector(lastCheckedPoint.x + lastDivision.x,lastCheckedPoint.y + lastDivision.y));
-						PApplet.println("Added point " + r);
+						// PApplet.println("Added point " + r);
 						lastCheckedPoint = resampledPoints.get(resampledPoints.size()-1);
 						curTraversedDist = 0;
 						break;
@@ -105,7 +105,7 @@ public class Gesture
 							double newPointY  = lerpDouble(lastCheckedPoint.y,originalPoints.get(nextPointIndex).y,lerpAmount);		
 									
 							resampledPoints.add(new PVector((float)newPointX,(float)newPointY));
-							PApplet.println("Added point " + r);
+							// PApplet.println("Added point " + r);
 							curTraversedDist = 0;
 							lastCheckedPoint = resampledPoints.get(resampledPoints.size()-1);
 							break;
