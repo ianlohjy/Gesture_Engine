@@ -210,11 +210,11 @@ public class Gesture
 		}
 		else 
 		{
-			PApplet.println("Could not process gesture. No points provided");
+			PApplet.println("Could not process gesture. No points provided in constructor");
 		}
 	}
 	
-	public void loadFromJson(String file)
+	public void loadFromJson(String file, boolean verbose)
 	{	// Loads and overwrites gesture information with date from a json file
 		JSONObject loadedJson = new JSONObject();
 		loadedJson = PApplet.loadJSONObject(new File(file));
@@ -240,6 +240,7 @@ public class Gesture
 			this.points.add(new PVector(loadedPoint.getFloat(0),loadedPoint.getFloat(1)));
 		}
 		
+		/*
 		PApplet.println(this.gestureName);
 		PApplet.println(this.centroid);
 		PApplet.println(this.indicativeAngle);
@@ -247,6 +248,22 @@ public class Gesture
 		PApplet.println(this.scaleFactor);
 		PApplet.println(this.referenceSquareLength);
 		PApplet.println(this.gestureResolution);
+		*/
+		if(verbose)
+		{
+			displayGestureInfo();
+		}
+		
+	}
+	
+	public void displayGestureInfo()
+	{
+		System.out.println("Gesture '" + gestureName + "' (" + points.size() + " points)");
+	}
+	
+	public void displayGestureInfoDetailed()
+	{
+		
 	}
 	
 	public void saveAsJson(String folderPath)

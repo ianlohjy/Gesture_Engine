@@ -25,7 +25,7 @@ public class GestureExample extends PApplet
 	{
 		background(255);
 		gestureEngine = new GestureEngine();
-		gestureEngine.loadGestureTemplatesFrom("./gestures/");
+		gestureEngine.loadGestureTemplatesFrom("./gestures/", true);
 	}
 	
 	public void draw()

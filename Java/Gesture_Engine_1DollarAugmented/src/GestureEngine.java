@@ -77,24 +77,35 @@ public class GestureEngine
 		gesture.saveAsJson("./gestures/");
 	}
 	
-	public void loadGestureTemplatesFrom(String folderPath)
+	public boolean loadGestureTemplatesFrom(String folderPath, boolean verbose)
 	{
 		File dir = new File(folderPath);
 		File [] files = dir.listFiles();
 		
-		for(File file : files)
+		try
 		{
-			String[] pathToLoad = file.toString().split("[\\\\/]");
-			String fileToLoad   = pathToLoad[pathToLoad.length-1];
-			
-			// Check to see if the file is a .gst file
-			if(fileToLoad.split("[.]")[1].equals("gst"))
+			for(File file : files)
 			{
-				Gesture loadedGesture = new Gesture(this,null);
-				loadedGesture.loadFromJson(file.toString());
-				gestureTemplates.add(loadedGesture);
-				PApplet.println("Gesture " + fileToLoad + " loaded");
+				String[] pathToLoad = file.toString().split("[\\\\/]");
+				String fileToLoad   = pathToLoad[pathToLoad.length-1];
+				
+				// Check to see if the file is a .gst file
+				if(fileToLoad.split("[.]")[1].equals("gst"))
+				{
+					Gesture loadedGesture = new Gesture(this,null);
+					loadedGesture.loadFromJson(file.toString(), verbose);
+					gestureTemplates.add(loadedGesture);
+					if(verbose)
+					{
+						System.out.println("Gesture " + fileToLoad + " loaded successfully");
+					}
+				}
 			}
+			return true;
+		}
+		catch(Exception e)
+		{
+			return false;
 		}
 	}
 	
