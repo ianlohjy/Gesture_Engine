@@ -123,6 +123,10 @@ public class GestureEngine
 		float[] scoresRanked;
 		Gesture[] gesturesRanked;
 		
+		// These are empty values, but could be useful for those working with GestureResponse
+		PVector startPoint;
+		PVector endPoint;
+		
 		GestureResponse(Gesture[] gesturesRanked, float[] scoresRanked)
 		{
 			this.scoresRanked = scoresRanked;
