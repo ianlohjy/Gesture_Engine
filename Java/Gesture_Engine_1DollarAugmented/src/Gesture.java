@@ -11,6 +11,7 @@ public class Gesture
 	float indicativeAngle; // In radians
 	ArrayList<PVector> points;
 	float[] scaleFactor;
+	float[] initialSize;
 	float referenceSquareLength;
 	int gestureResolution;
 	
@@ -172,8 +173,11 @@ public class Gesture
 			}
 		}
 		
-		float width  = maxX-minX;
-		float height = maxY-minY;
+		float width   = maxX-minX;
+		float height  = maxY-minY;
+		initialSize   = new float[2];
+		initialSize[0]= width;
+		initialSize[1]= height;
 
 		float scale[] = {refSquareLength/width, refSquareLength/height};
 		return scale;
