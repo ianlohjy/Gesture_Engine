@@ -55,9 +55,9 @@ public class GestureExample extends PApplet
 	
 	public void mousePressed()
 	{
-		drawnPoints = new ArrayList<PVector>();
 		if(mouseY < height-20)
 		{	
+			drawnPoints = new ArrayList<PVector>();
 			drawnPoints = new ArrayList<PVector>();
 			drawnPoints.add(new PVector(mouseX,mouseY));
 		}
