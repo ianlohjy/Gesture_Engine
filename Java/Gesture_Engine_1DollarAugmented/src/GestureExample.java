@@ -88,6 +88,7 @@ public class GestureExample extends PApplet
 				if(result != null)
 				{
 					bestGuess = result.bestGuess + " (" + (int)(result.bestScore) + "%)";
+					println("INDICATIVE ANGLE IS " + degrees(result.bestGesture.indicativeAngle));
 					inferredAngle = 0;
 					//println("Inferred Angle is " + degrees(inferredAngle));
 				}
