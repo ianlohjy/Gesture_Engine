@@ -10,6 +10,7 @@ public class Gesture
 	PVector centroid;
 	float indicativeAngle; // In radians
 	ArrayList<PVector> points;
+	ArrayList<PVector> input_points;
 	float[] scaleFactor;
 	float[] initialSize;
 	float referenceSquareLength;
@@ -197,6 +198,7 @@ public class Gesture
 	{
 		if(inputPoints != null)
 		{
+			input_points = inputPoints;
 			points = resample(inputPoints);
 			centroid = calcCentroid(points);
 			indicativeAngle = findIndicativeAngle(points,centroid);
