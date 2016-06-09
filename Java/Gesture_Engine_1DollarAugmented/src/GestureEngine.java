@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.TreeMap;
 
 import processing.core.*;
+import processing.data.JSONObject;
 
 public class GestureEngine 
 {
@@ -82,7 +83,55 @@ public class GestureEngine
 		gesture.saveAsJson("./gestures/");
 	}
 	
-	public boolean loadGestureTemplatesFrom(String folderPath, boolean verbose)
+	public boolean loadGestureTemplate(JSONObject json, boolean verbose)
+	{
+		try
+		{
+			Gesture loadedGesture = new Gesture(this,null);
+			loadedGesture.loadFromJson(json, verbose);
+			gestureTemplates.add(loadedGesture);
+			return true;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean loadGestureTemplate(String filePath, boolean verbose)
+	{
+		try
+		{
+			String[] pathToLoad = filePath.split("[\\\\/]");
+			String fileToLoad   = pathToLoad[pathToLoad.length-1];
+			
+			if(fileToLoad.split("[.]")[1].equals("gst"))
+			{
+				Gesture loadedGesture = new Gesture(this,null);
+				loadedGesture.loadFromJson(filePath, verbose);
+				gestureTemplates.add(loadedGesture);
+				
+				if(verbose)
+				{
+					System.out.println("Gesture " + fileToLoad + " loaded successfully");
+				}
+			}
+			else
+			{
+				return false;
+			}
+			
+			return true;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean loadGestureTemplatesFromFolder(String folderPath, boolean verbose)
 	{
 		File dir = new File(folderPath);
 		File [] files = dir.listFiles();

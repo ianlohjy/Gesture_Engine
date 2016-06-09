@@ -220,10 +220,9 @@ public class Gesture
 		}
 	}
 	
-	public void loadFromJson(String file, boolean verbose)
-	{	// Loads and overwrites gesture information with date from a json file
-		JSONObject loadedJson = new JSONObject();
-		loadedJson = PApplet.loadJSONObject(new File(file));
+	public void loadFromJson(JSONObject json, boolean verbose)
+	{
+		JSONObject loadedJson = json;
 		
 		gestureName = loadedJson.getString("gesture_name");
 		indicativeAngle = loadedJson.getFloat("indicative_angle");
@@ -246,20 +245,17 @@ public class Gesture
 			this.points.add(new PVector(loadedPoint.getFloat(0),loadedPoint.getFloat(1)));
 		}
 		
-		/*
-		PApplet.println(this.gestureName);
-		PApplet.println(this.centroid);
-		PApplet.println(this.indicativeAngle);
-		PApplet.println(this.points);
-		PApplet.println(this.scaleFactor);
-		PApplet.println(this.referenceSquareLength);
-		PApplet.println(this.gestureResolution);
-		*/
 		if(verbose)
 		{
 			displayGestureInfo();
 		}
-		
+	}
+	
+	public void loadFromJson(String file, boolean verbose)
+	{	// Loads and overwrites gesture information with date from a json file
+		JSONObject loadedJson = new JSONObject();
+		loadedJson = PApplet.loadJSONObject(new File(file));
+		loadFromJson(loadedJson, verbose);
 	}
 	
 	public void displayGestureInfo()
